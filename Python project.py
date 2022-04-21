@@ -37,6 +37,8 @@ def random_stat():
 
 # Round where player chooses stat
 def player_round():
+    print("In this round you will choose the stat's to compare\n")
+
     # player picks Pokemon
     player_score = 0
     opponent_score = 0
@@ -93,6 +95,7 @@ def player_round():
 
 # Round where opponent chooses stat
 def opponent_round():
+    print("In this round your opponent will pick the stats\n")
     player_score = 0
     opponent_score = 0
 
@@ -142,9 +145,9 @@ def opponent_round():
 
 
 def run():
-    Your_Score_Total: []
-    Opponent_Score_Total: []
     for rounds in range(4):
+        player_round()
+        opponent_round()
 
 
 
