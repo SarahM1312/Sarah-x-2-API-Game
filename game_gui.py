@@ -1,10 +1,13 @@
 import sys
 
+from PyQt5.QtCore import QSize
+
 import pokemon_top_trumps
 import random
 
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView, \
+    QDialog
 
 # Table Cell Items
 user_table_cell_items = []
@@ -162,10 +165,10 @@ def report_game_over():
             populate_text_box("* Nobody has any more cards (they're all in the draw list!) - STALEMATE! *")
             play_button.setText('New Game')
         else:
-            populate_text_box("* Computer has no more cards - YOU WIN! *")
+            populate_text_box("****** Computer has no more cards - YOU WIN! ******")
             play_button.setText('New Game')
     elif len(user_pokemon_list) == 0:
-        populate_text_box("* User has no more cards - COMPUTER WINS! *")
+        populate_text_box("****** User has no more cards - COMPUTER WINS! ******")
         play_button.setText('New Game')
 
 
@@ -200,6 +203,15 @@ def display_pokemon_stats(pokemon, owner):
         row = row + 1
 
     return display_stats
+
+
+# Function to display a dialog
+def display_dialog():
+    welcome_dialog = QWidget()
+    welcome_dialog.resize(1000, 500)
+    welcome_dialog.setWindowTitle("Welcome")
+    welcome_dialog.setFixedSize()
+    welcome_dialog.show()
 
 
 # Function to update the GUI following the end of the game, i.e. to disallow further selections etc.
@@ -291,16 +303,16 @@ def initialise_pokemon_data():
     draw_list = []
 
     # Report to the User that a new game has been initialised
-    populate_text_box("\n====================== NEW GAME ======================")
+    populate_text_box("\n================== NEW GAME ==================")
 
 
 # Create Game GUI
 app = QApplication(sys.argv)
 dialog = QWidget()
-dialog.resize(1000, 500)
 dialog.setWindowTitle("Pokemon Top Trumps")
+dialog.setFixedSize(QSize(620, 800))
 horizontal_layout_widget = QtWidgets.QWidget(dialog)
-horizontal_layout_widget.setGeometry(QtCore.QRect(10, 10, 980, 300))
+horizontal_layout_widget.setGeometry(QtCore.QRect(10, 10, 600, 300))
 horizontal_layout_widget.setObjectName("horizontal_layout_widget")
 horizontal_layout = QtWidgets.QHBoxLayout(horizontal_layout_widget)
 horizontal_layout.setContentsMargins(0, 0, 0, 0)
@@ -310,7 +322,7 @@ horizontal_layout.setObjectName("horizontal_layout")
 user_table = QTableWidget(5, 1)
 user_table.setItemDelegateForColumn(0, MyDelegate())  # set column 1 to be non-editable
 user_table.clicked.connect(user_table_type_select)  # connect Pokemon Type selection to function
-user_table.setHorizontalHeaderLabels(['User Pokemon'])
+user_table.setHorizontalHeaderLabels(['User'])
 user_table.horizontalHeader().setSectionsClickable(False)
 user_table.setVerticalHeaderLabels(['Name', 'Height', 'Weight', 'Type', ''])
 user_table.verticalHeader().setSectionsClickable(False)
@@ -327,7 +339,7 @@ horizontal_layout.addItem(spacer_item)
 computer_table = QTableWidget(5, 1)
 computer_table.setItemDelegateForColumn(0, MyDelegate())  # set column 1 to be non-editable
 computer_table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
-computer_table.setHorizontalHeaderLabels(['Computer Pokemon'])
+computer_table.setHorizontalHeaderLabels(['Computer'])
 computer_table.horizontalHeader().setSectionsClickable(False)
 computer_table.setVerticalHeaderLabels(['Name', 'Height', 'Weight', 'Type', ''])
 computer_table.verticalHeader().setSectionsClickable(False)
@@ -337,7 +349,7 @@ horizontal_layout.addWidget(computer_table)
 computer_table_cell_items = generate_table_items(computer_table)
 
 vertical_layout_widget = QtWidgets.QWidget(dialog)
-vertical_layout_widget.setGeometry(QtCore.QRect(10, 300, 980, 190))
+vertical_layout_widget.setGeometry(QtCore.QRect(10, 320, 600, 470))
 vertical_layout_widget.setObjectName("vertical_layout_widget")
 vertical_layout = QtWidgets.QVBoxLayout(vertical_layout_widget)
 vertical_layout.setContentsMargins(0, 0, 0, 0)
