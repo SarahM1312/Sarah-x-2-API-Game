@@ -91,7 +91,17 @@ def retrieve_types_data(pokemon_types_list):
 
 # Function to perform a round of the game
 def game_round(player, user_pokemon_dic, computer_pokemon_dic):
-    user_pokemon = user_pokemon_dic[0]
+    print("You can choose one of the following pokemon's :")
+    name_list = []
+    for user_pokemon_dics in user_pokemon_dic:
+        random.randint(0, int(len(user_pokemon_dic)))
+        name_list.append(user_pokemon_dics["name"])
+        print(user_pokemon_dics["name"])
+
+    user_pokemon_name = input("Which pokemon do you want to use?\n")
+
+    user_pokemon = user_pokemon_dic[name_list.index(user_pokemon_name)]
+    
     computer_pokemon = computer_pokemon_dic[0]
 
     # Display whose turn it is
