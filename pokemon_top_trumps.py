@@ -2,40 +2,9 @@ import requests
 import random
 
 # Global constants
-basic_stats = ['height', 'weight']
+from PyQt5.QtWidgets import QInputDialog
+
 max_pokemon_id = 151
-
-
-# Function to allow User to choose the size of the pack
-def choose_size_of_pack(max_size=10):
-    # User chooses size of pack to play with
-    print("**********************************")
-    print("* Welcome to Pokemon Top Trumps! *")
-    print("**********************************")
-    print("The aim is to win all of you opponents Pokemon!")
-    print("What size of pack would you like to play Pokemon with?")
-
-    error = True
-    while error:
-        input_size_of_pack = input(f"Choose an even number between 2 and {max_size}: ")
-
-        # Error check input (must be even)
-        if input_size_of_pack.isnumeric():
-            size_of_pack = int(input_size_of_pack)
-            if 2 <= size_of_pack <= max_size:
-                if (size_of_pack / 2).is_integer():
-                    error = False
-                else:
-                    print(f"{size_of_pack} is not an even number")
-            else:
-                print(f"{input_size_of_pack} does not fall within 1 and {max_pokemon_id}")
-        else:
-            print(f"{input_size_of_pack} is not a number")
-
-        # Remind the user of the valid input criteria
-        if error:
-            print(f"Input of size of pack must be an even number between 1 and {max_size}")
-    return size_of_pack
 
 
 # Generate a list of unique Pokemon IDs
@@ -87,38 +56,6 @@ def retrieve_types_data(pokemon_types_list):
                            'weak against': weak_against,
                            'strong against': strong_against})
     return types_list
-
-
-# Function to compare the type data in the given Pokemon
-def type_comparison(source_pokemon, comparison_pokemon, stat_choice, player):
-    winner = player
-    source_types = source_pokemon['types']
-    for source_type in source_types:
-        if source_type['name'] == stat_choice:
-            source_type_strong_against = source_type['strong against']
-            source_type_weak_against = source_type['weak against']
-            break
-
-    for type_data in comparison_pokemon['types']:
-        if type_data['name'] in source_type_strong_against:
-            if player == 'User':
-                winner = 'User'
-            else:
-                winner = 'Computer'
-            print(f"Type {stat_choice} is strong against {type_data['name']}")
-            break
-        elif type_data['name'] in source_type_weak_against:
-            if player == 'User':
-                winner = 'Computer'
-            else:
-                winner = 'User'
-            print(f"Type {stat_choice} is weak against {type_data['name']}")
-            break
-        else:
-            print(f"Type {stat_choice} has no effect on {type_data['name']}")
-            winner = 'Draw'
-
-    return winner
 
 
 # Function to move the given Pokemon to the list of the given list
