@@ -63,3 +63,4 @@ def move_to_end(pokemon_dic, pokemon):
     if len(pokemon_dic) != 0 and pokemon in pokemon_dic:
         pokemon_dic.remove(pokemon)
         pokemon_dic.append(pokemon)
+

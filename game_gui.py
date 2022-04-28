@@ -493,3 +493,4 @@ count_label.setText(f"User: {len(user_pokemon_list)}  Computer: {len(computer_po
 
 # Start the first round
 game_round()
+
