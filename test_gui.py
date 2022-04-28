@@ -8,7 +8,9 @@ app = QApplication(sys,argv)
 window = QWidget()
 window.setWindowTitle("Welcome to Top Trumps by Sarah B and Sarah M")
 window.setFixedWidth(1000)
-window.setStyleSheet("background: #161219;")
+window.setStyleSheet("background: #white;")
+
+window.show()
 
 def window():
    app = QApplication(sys.argv)
