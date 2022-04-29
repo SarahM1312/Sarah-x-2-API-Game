@@ -1,3 +1,10 @@
+# In order to run this code you will need to:
+# run it on Python 3.9;
+# save Pokemon-top_trumps in the same file; and
+# import the following into your terminal
+# ~ pip install requests; and
+# ~ pip install pyqt5 pyqt5-tools
+
 import sys
 
 from PyQt5.QtCore import QSize
@@ -234,7 +241,7 @@ def report_game_over():
         play_button.setText('New Game')
 
     # Re-enable the 'Play button'
-    play_button.setDisabled(False);
+    play_button.setDisabled(False)
 
 
 # Function to populate the information text box
@@ -304,6 +311,7 @@ def choose_size():
     global pack_size
     pack_size = input_size_of_pack
 
+# Function for user to choose your Pokemon
 
 # Function to update the GUI following the end of the game, i.e. to disallow further selections etc.
 def round_over():
@@ -316,7 +324,7 @@ def round_over():
 
     # Prompt user to press button for new round
     play_button.setText('Next Round')
-    play_button.setDisabled(True);
+    play_button.setDisabled(True)
 
 
 # This function generates the table items
@@ -346,7 +354,7 @@ def generate_table_items(table, owner):
 # Function to perform a round of the game
 def game_round():
     # Disable the 'Play button' until the round is over
-    play_button.setDisabled(True);
+    play_button.setDisabled(True)
 
     # Carry on playing until one of the lists is empty,
     # i.e. either the User or the Computer has won all the Pokemon
