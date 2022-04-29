@@ -103,13 +103,13 @@ def type_select(stat_choice):
     if stat_choice == 'height' or stat_choice == 'weight':
         if user_pokemon[stat_choice] > computer_pokemon[stat_choice]:
             winner = 'User'
-            populate_text_box(f"User's {user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]} "
-                              f"beat Computer's {computer_pokemon['name'].upper()} {stat_choice} {computer_pokemon[stat_choice]}")
+            populate_text_box(f"\nUser's {user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]} "
+                              f"beat Computer's {computer_pokemon['name'].upper()} {stat_choice} {computer_pokemon[stat_choice]}\n")
         elif user_pokemon[stat_choice] < computer_pokemon[stat_choice]:
             winner = 'Computer'
             populate_text_box(
-                f"Computer's {computer_pokemon['name'].upper()} {stat_choice} {computer_pokemon[stat_choice]} "
-                f"beat User's {user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]}")
+                f"\nComputer's {computer_pokemon['name'].upper()} {stat_choice} {computer_pokemon[stat_choice]} "
+                f"beat User's {user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]}\n")
         else:
             winner = 'Draw'
             populate_text_box(f"{user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]} "
@@ -203,17 +203,17 @@ def type_comparison(user_pokemon, computer_pokemon, stat_choice, player):
                 winner = 'User'
             else:
                 winner = 'Computer'
-            populate_text_box(f"{stat_choice} is strong against {type_data['name']}")
+            populate_text_box(f"\n{stat_choice} is strong against {type_data['name']}\n")
             break
         elif type_data['name'] in source_type_weak_against:
             if player == 'User':
                 winner = 'Computer'
             else:
                 winner = 'User'
-            populate_text_box(f"{stat_choice} is weak against {type_data['name']}")
+            populate_text_box(f"\n{stat_choice} is weak against {type_data['name']}\n")
             break
         else:
-            populate_text_box(f"{stat_choice} has no effect on {type_data['name']}")
+            populate_text_box(f"\n{stat_choice} has no effect on {type_data['name']}\n")
             winner = 'Draw'
     return winner
 
@@ -356,9 +356,9 @@ def game_round():
 
         # Display whose turn it is
         if player_turn == 'User':
-            populate_text_box(f"^^^^^ YOUR TURN! ^^^^^^^")
+            populate_text_box(f"^^^^^^^^^\nYOUR TURN!\n^^^^^^^^^")
         else:
-            populate_text_box(f"^^^ COMPUTER'S TURN! ^^^")
+            populate_text_box(f"^^^^^^^^^^\nCOMPUTER'S TURN!\n^^^^^^^^^^")
 
         # Display User Pokemon statistics
         display_pokemon_stats(user_pokemon, 'User')
@@ -366,7 +366,7 @@ def game_round():
         # Determine which statistic to compare
         if player_turn == 'User':
             # If it's the User's turn, prompt User for choice
-            populate_text_box(f"Select the Pokemon statistic would you like to play!")
+            populate_text_box(f"\nSelect the Pokemon statistic would you like to play!")
         else:
             # Display Computer Pokemon statistics
             allowed_stats = display_pokemon_stats(computer_pokemon, 'Computer')
@@ -409,7 +409,7 @@ def initialise_pokemon_data():
     draw_list = []
 
     # Report to the User that a new game has been initialised
-    populate_text_box("\n================== NEW GAME ===================")
+    populate_text_box("\n==================\nNEW GAME\n ===================")
 
 
 # Create Game GUI
@@ -477,7 +477,7 @@ vertical_layout.addWidget(text_browser)
 
 # Define buttons
 play_button = QPushButton('Play')
-play_button.setStyleSheet("Border: 4px solid '#BC006C';""Background-color: 'pink';""Border-radius: 15px;" "font-size:35px;""color:'black';")
+play_button.setStyleSheet("Border: 4px solid 'bue';""Background-color: 'yellow';""Border-radius: 15px;" "font-size:35px;""color:'blue';")
 play_button.clicked.connect(play)  # Connect clicked action to play function
 vertical_layout.addWidget(play_button)
 
