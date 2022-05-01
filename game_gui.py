@@ -1,5 +1,6 @@
 import sys
 
+
 from PyQt5.QtCore import QSize, Qt
 from os.path import exists
 
@@ -10,6 +11,7 @@ from pygame import mixer
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView, \
     QInputDialog, QMessageBox
+from PyQt5.QtGui import QCursor
 
 # Table Cell Items
 user_table_cell_items = []
@@ -531,13 +533,14 @@ vertical_layout.addWidget(text_browser)
 
 # Define buttons
 play_button = QPushButton('Play')
-play_button.setStyleSheet(
-    "Border: 4px solid '#BC006C';""Background-color: 'pink';""Border-radius: 15px;" "font-size:35px;""color:'black';")
+play_button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+play_button.setStyleSheet("*{Border: 4px solid 'blue';""Background-color: 'yellow';""Border-radius: 15px;" "font-size:20px;"
+                     "color:'black';" "padding:10px 0;" "margin 5px 5px;}" "*:hover{background:'blue';}")
 play_button.clicked.connect(play)  # Connect clicked action to play function
 vertical_layout.addWidget(play_button)
 help_button = QPushButton('Help')
-help_button.setStyleSheet(
-    "Border: 4px solid '#BC006C';""Background-color: 'pink';""Border-radius: 15px;" "font-size:35px;""color:'black';")
+help_button.setStyleSheet("*{Border: 4px solid 'blue';""Background-color: 'yellow';""Border-radius: 5px;" "font-size:20px;"
+                     "color:'black';" "padding:10px 0;" "margin 10px 20px;}" "*:hover{background:'blue';}")
 help_button.clicked.connect(help_button_clicked)  # Connect clicked action to play function
 vertical_layout.addWidget(help_button)
 

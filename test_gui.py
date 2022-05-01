@@ -14,7 +14,9 @@ import random
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView, \
-    QInputDialog, QMessageBox
+    QInputDialog, QMessageBox, QVBoxLayout, QGridLayout, QLabel
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QCursor
 
 # Table Cell Items
 user_table_cell_items = []
@@ -56,6 +58,7 @@ def play():
 
     # Initiate new game round
     game_round()
+
 
 # This function clears contents of text box
 
@@ -250,9 +253,11 @@ def populate_text_box(message):
     text_browser.append(message)
     print(message)
 
+
 # Function to clear the information in text box
 def clear_text_box():
     clear(text_browser)
+
 
 # Function to display Pokemon statistics and return a list of types
 def display_pokemon_stats(pokemon, owner):
@@ -314,6 +319,7 @@ def choose_size():
     # Set the global variable
     global pack_size
     pack_size = input_size_of_pack
+
 
 # Function for user to choose your Pokemon
 
@@ -424,6 +430,23 @@ def initialise_pokemon_data():
     populate_text_box("\n==================\nNEW GAME\n ===================")
 
 
+# create welcome message
+app = QApplication(sys.argv)
+window = QWidget()
+window.setWindowTitle("Welcome to Pokemon Top Trumps")
+window.setFixedWidth(1000)
+window.setStyleSheet("background: #161219;")
+
+grid = QGridLayout()
+
+image = QPixmap("Pokemon-Transparent-Images.png")
+logo = QLabel()
+logo.setPixmap(image)
+logo.setAligment(QtCore.Qt.AlignCenter)
+grid.addimage(logo,0,0)
+
+sys.exit(app.exec())
+
 # Create Game GUI
 app = QApplication(sys.argv)
 dialog = QWidget()
@@ -438,13 +461,13 @@ horizontal_layout.setContentsMargins(0, 0, 0, 0)
 horizontal_layout.setObjectName("horizontal_layout")
 
 # Create table to allow user to choose Pokemon
-user_table_pokemon = QTableWidget(random.randint(0, int(len(user_pokemon_dic))))
-user_table.setItemDelegateForColumn(0, MyDelegate())  # set column 1 to be non-editable
-user_table.clicked.connect(user_pokemon_select)  # connect Pokemon Type selection to function
-user_table.setHorizontalHeaderLabels(['User Pokemon Choice'])
-user_table.horizontalHeader().setSectionsClickable(False)
-user_table.setWindowTitle("Pick Pokemon you would like to select")
-horizontal_layout.addWidget(user_table)
+# user_table_pokemon = QTableWidget(random.randint(0, int(len(user_pokemon_dic))))
+# user_table.setItemDelegateForColumn(0, MyDelegate())  # set column 1 to be non-editable
+# user_table.clicked.connect(user_pokemon_select)  # connect Pokemon Type selection to function
+# user_table.setHorizontalHeaderLabels(['User Pokemon Choice'])
+# user_table.horizontalHeader().setSectionsClickable(False)
+# user_table.setWindowTitle("Pick Pokemon you would like to select")
+# horizontal_layout.addWidget(user_table)
 
 # Define User Pokemon Table
 user_table = QTableWidget(5, 1)
@@ -498,7 +521,8 @@ vertical_layout.addWidget(text_browser)
 
 # Define buttons
 play_button = QPushButton('Play')
-play_button.setStyleSheet("Border: 4px solid 'bue';""Background-color: 'yellow';""Border-radius: 15px;" "font-size:35px;""color:'blue';")
+play_button.setStyleSheet(
+    "Border: 4px solid 'bue';""Background-color: 'yellow';""Border-radius: 15px;" "font-size:35px;""color:'blue';")
 play_button.clicked.connect(play)  # Connect clicked action to play function
 vertical_layout.addWidget(play_button)
 
@@ -514,4 +538,3 @@ count_label.setText(f"User: {len(user_pokemon_list)}  Computer: {len(computer_po
 
 # Start the first round
 game_round()
-
