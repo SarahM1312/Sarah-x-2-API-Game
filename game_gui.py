@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, Qt
 
 import pokemon_top_trumps
 import random
@@ -32,8 +32,11 @@ class MyDelegate(QtWidgets.QItemDelegate):
 
 # This function is called when the 'Play' button is pressed
 def play():
-    # Reinitialise the Data (but only if not mid-way through a game)
+    # Reinitialise the Data (but only if not midway through a game)
     if len(computer_pokemon_list) == 0 or len(user_pokemon_list) == 0:
+        # First disable the play button, it should not be activated while initialising data
+        play_button.setEnabled(True)
+
         # Allow user to reset deck size before new game
         choose_size()
 
@@ -234,7 +237,7 @@ def report_game_over():
         play_button.setText('New Game')
 
     # Re-enable the 'Play button'
-    play_button.setDisabled(False);
+    play_button.setEnabled(True)
 
 
 # Function to populate the information text box
@@ -279,9 +282,16 @@ def choose_size():
     # User chooses size of pack to play with
     error = True
     while error:
-        input_size_of_pack, ok = QInputDialog.getInt(dialog, "Pokemon Top Trumps",
-                                                     f"How many Pokemon cards do you want to play with?\nChoose an even "
-                                                     f"number between 2 and {max_pokemon_id}")
+        input_size_of_pack, ok = \
+            QInputDialog.getInt(dialog,  # parent
+                                "Pokemon Top Trumps",  # title
+                                f"How many Pokemon cards do you want to play with?\nChoose an even "
+                                f"number between 2 and {max_pokemon_id}",  # label
+                                2,  # default value
+                                2,  # min value
+                                150,  # max value
+                                2,  # step
+                                Qt.WindowCloseButtonHint)  # WindowsFlags - defines the window setup
         error_message = ""
         # Error check input (must be even)
         if ok:
@@ -293,12 +303,20 @@ def choose_size():
             else:
                 error_message = f"{input_size_of_pack} does not fall within 1 and {max_pokemon_id}"
 
-        # Remind the user of the valid input criteria
-        if error:
-            QMessageBox.warning(dialog, error_message,
-                                f"Input of size of pack must be an even number between 1 and {max_pokemon_id}",
-                                QMessageBox.Ok)
-            print(f"Input of size of pack must be an even number between 1 and {max_pokemon_id}")
+            # Remind the user of the valid input criteria
+            if error:
+                QMessageBox.warning(dialog, error_message,
+                                    f"Input of size of pack must be an even number between 1 and {max_pokemon_id}",
+                                    QMessageBox.Ok)
+                print(f"Input of size of pack must be an even number between 1 and {max_pokemon_id}")
+        else:
+            exit_dialog = QMessageBox
+            answer = exit_dialog.question(dialog, "Exit?",
+                                          "Are you sure you want to exit Pokemon Top Trumps?",
+                                          QMessageBox.Yes | QMessageBox.No)
+            # Exit the application
+            if answer == QMessageBox.Yes:
+                exit()
 
     # Set the global variable
     global pack_size
@@ -316,7 +334,7 @@ def round_over():
 
     # Prompt user to press button for new round
     play_button.setText('Next Round')
-    play_button.setDisabled(True);
+    play_button.setEnabled(True)
 
 
 # This function generates the table items
@@ -346,7 +364,7 @@ def generate_table_items(table, owner):
 # Function to perform a round of the game
 def game_round():
     # Disable the 'Play button' until the round is over
-    play_button.setDisabled(True);
+    play_button.setEnabled(False)
 
     # Carry on playing until one of the lists is empty,
     # i.e. either the User or the Computer has won all the Pokemon
@@ -375,7 +393,7 @@ def game_round():
             stat_choice = allowed_stats[random.randint(0, len(allowed_stats))]
 
             # Report to the User what the Computer's choice was
-            populate_text_box(f"The Computer has chosen the statistic {stat_choice}")
+            populate_text_box(f"The Computer has chosen to compare {stat_choice}")
 
             # Directly initiate statistic comparison for Computer
             type_select(stat_choice)
@@ -477,7 +495,8 @@ vertical_layout.addWidget(text_browser)
 
 # Define buttons
 play_button = QPushButton('Play')
-play_button.setStyleSheet("Border: 4px solid '#BC006C';""Background-color: 'pink';""Border-radius: 15px;" "font-size:35px;""color:'black';")
+play_button.setStyleSheet(
+    "Border: 4px solid '#BC006C';""Background-color: 'pink';""Border-radius: 15px;" "font-size:35px;""color:'black';")
 play_button.clicked.connect(play)  # Connect clicked action to play function
 vertical_layout.addWidget(play_button)
 
@@ -493,4 +512,3 @@ count_label.setText(f"User: {len(user_pokemon_list)}  Computer: {len(computer_po
 
 # Start the first round
 game_round()
-
