@@ -1,9 +1,11 @@
 import sys
 
 from PyQt5.QtCore import QSize, Qt
+from os.path import exists
 
 import pokemon_top_trumps
 import random
+from pygame import mixer
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView, \
@@ -54,6 +56,22 @@ def play():
     game_round()
 
 
+# This function is called when the 'help' button is pressed and invokes the Help Dialog
+def help_button_clicked():
+    help_text = "1. The User chooses the size of pack for the game" \
+                "\n2. Pokemon cards are dealt to the User and the Computer" \
+                "\n3. Th User leads the first round by choosing which stat to play on their first card" \
+                "\n4. The stat is compared with the Computer's top card" \
+                "\n5. For numeric stats the winner of this round is whoever has the highest" \
+                "\n6. When comparing types the winner is whoever chooses the stronger type according to the Pokemon API" \
+                "\n7. The winner of the highest stat wins both top cards and adds to the base of their pile" \
+                "\n6. The winner of the round chooses the stat for the next round" \
+                "\n7. The first player to get all of the cards wins!"
+    QMessageBox.information(dialog, "How to Play Pokemon Top Trumps",
+                            help_text,
+                            QMessageBox.Ok)
+
+
 # This function clears the contents of the tables
 def reset_gui():
     # Reset table contents
@@ -73,21 +91,23 @@ def reset_gui():
 
 # This function is called when a selection is made to the User table
 def user_table_type_select():
-    # Find what statistic has been selected
-    selected_stats = user_table.selectedItems()
+    try:
+        # Find what statistic has been selected
+        selected_stats = user_table.selectedItems()
 
-    # Only continue if a valid selection has been made
-    if len(selected_stats) > 0:
-        selected_type_row = selected_stats[0].row()
-        stat_choice = selected_stats[0].text()
-        if selected_type_row == 1:
-            stat_choice = 'height'
-        elif selected_type_row == 2:
-            stat_choice = 'weight'
+        # Only continue if a valid selection has been made
+        if len(selected_stats) > 0:
+            selected_type_row = selected_stats[0].row()
+            stat_choice = selected_stats[0].text()
+            if selected_type_row == 1:
+                stat_choice = 'height'
+            elif selected_type_row == 2:
+                stat_choice = 'weight'
 
-        # Perform statistic comparison
-        type_select(stat_choice)
-
+            # Perform statistic comparison
+            type_select(stat_choice)
+    except:
+        print("Exception has occurred in user_table_type_select")
 
 # Function to perform comparison of current User and Computer Pokemon
 # based on the selected Pokemon statistical type
@@ -207,6 +227,7 @@ def type_comparison(user_pokemon, computer_pokemon, stat_choice, player):
             else:
                 winner = 'Computer'
             populate_text_box(f"{stat_choice} is strong against {type_data['name']}")
+            play_victory_sound(stat_choice)
             break
         elif type_data['name'] in source_type_weak_against:
             if player == 'User':
@@ -214,11 +235,27 @@ def type_comparison(user_pokemon, computer_pokemon, stat_choice, player):
             else:
                 winner = 'User'
             populate_text_box(f"{stat_choice} is weak against {type_data['name']}")
+            play_victory_sound(type_data['name'])
             break
         else:
             populate_text_box(f"{stat_choice} has no effect on {type_data['name']}")
             winner = 'Draw'
     return winner
+
+
+# Play victory music for a type win
+def play_victory_sound(winning_type):
+    file_path = 'sound/' + winning_type + '.mp3'
+
+    # Check a file exists for the winning type
+    if exists(file_path):
+        mixer.music.load(file_path)
+        mixer.music.play()
+    else:
+        print(f"Could not play victory tune: the file {file_path} does not exist")
+
+    # Files exist for fire, water, poison, ghost, ice, electric, fighting, flying, rock
+    # No files for normal, grass, ground, psychic, bug, dark, dragon, steel, fairy
 
 
 # Function to report is the game is over
@@ -250,7 +287,6 @@ def populate_text_box(message):
 def display_pokemon_stats(pokemon, owner):
     # Populate text box with User instructions
     # populate_text_box(f"{owner} Pokemon is {pokemon['name'].upper()}, it has the above statistics")
-
     if owner == 'User':
         table_cells_to_populate = user_table_cell_items
     else:
@@ -390,7 +426,7 @@ def game_round():
             allowed_stats = display_pokemon_stats(computer_pokemon, 'Computer')
 
             # If it's the Computer's turn, select choice randomly
-            stat_choice = allowed_stats[random.randint(0, len(allowed_stats))]
+            stat_choice = allowed_stats[random.randint(0, (len(allowed_stats))-1)]
 
             # Report to the User what the Computer's choice was
             populate_text_box(f"The Computer has chosen to compare {stat_choice}")
@@ -499,6 +535,14 @@ play_button.setStyleSheet(
     "Border: 4px solid '#BC006C';""Background-color: 'pink';""Border-radius: 15px;" "font-size:35px;""color:'black';")
 play_button.clicked.connect(play)  # Connect clicked action to play function
 vertical_layout.addWidget(play_button)
+help_button = QPushButton('Help')
+help_button.setStyleSheet(
+    "Border: 4px solid '#BC006C';""Background-color: 'pink';""Border-radius: 15px;" "font-size:35px;""color:'black';")
+help_button.clicked.connect(help_button_clicked)  # Connect clicked action to play function
+vertical_layout.addWidget(help_button)
+
+# Initialise music player
+mixer.init()
 
 # Prompt the User to choose the pack size - only do this once
 choose_size()
