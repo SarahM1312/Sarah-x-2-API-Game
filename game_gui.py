@@ -96,7 +96,6 @@ def user_table_type_select():
     try:
         # Find what statistic has been selected
         selected_stats = user_table.selectedItems()
-
         # Only continue if a valid selection has been made
         if len(selected_stats) > 0:
             selected_type_row = selected_stats[0].row()
@@ -392,6 +391,7 @@ def generate_table_items(table, owner):
     table_cell_items[0].setFlags(QtCore.Qt.ItemIsSelectable)
     if owner == 'Computer':
         table_cell_items[1].setFlags(QtCore.Qt.ItemIsSelectable)
+
         table_cell_items[2].setFlags(QtCore.Qt.ItemIsSelectable)
         table_cell_items[3].setFlags(QtCore.Qt.ItemIsSelectable)
         table_cell_items[4].setFlags(QtCore.Qt.ItemIsSelectable)
@@ -412,9 +412,9 @@ def game_round():
 
         # Display whose turn it is
         if player_turn == 'User':
-            populate_text_box(f"^^^^^ YOUR TURN! ^^^^^^^")
+            populate_text_box(f"^^^^^\nYOUR TURN!\n^^^^^^^\n")
         else:
-            populate_text_box(f"^^^ COMPUTER'S TURN! ^^^")
+            populate_text_box(f"^^^\nCOMPUTER'S TURN!\n^^^\n")
 
         # Display User Pokemon statistics
         display_pokemon_stats(user_pokemon, 'User')
@@ -465,7 +465,7 @@ def initialise_pokemon_data():
     draw_list = []
 
     # Report to the User that a new game has been initialised
-    populate_text_box("\n================== NEW GAME ===================")
+    populate_text_box("\n==================\n NEW GAME \n===================\n")
 
 
 # Create Game GUI
@@ -473,7 +473,6 @@ app = QApplication(sys.argv)
 dialog = QWidget()
 dialog.setWindowTitle("Pokemon Top Trumps")
 dialog.setFixedSize(QSize(620, 800))
-dialog.setStyleSheet("Background:'white';""font-size: 20px;""colour:'black';")
 horizontal_layout_widget = QtWidgets.QWidget(dialog)
 horizontal_layout_widget.setGeometry(QtCore.QRect(10, 10, 600, 300))
 horizontal_layout_widget.setObjectName("horizontal_layout_widget")
@@ -529,18 +528,24 @@ vertical_layout.addWidget(count_label)
 # Define Text Box for displaying instructions
 text_browser = QtWidgets.QTextBrowser(vertical_layout_widget)
 text_browser.setObjectName("text_browser")
+text_browser.setStyleSheet("Background-color: '#161219';""font-size:20px;" "color:'#BC006C';")
+
 vertical_layout.addWidget(text_browser)
 
 # Define buttons
 play_button = QPushButton('Play')
 play_button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
-play_button.setStyleSheet("*{Border: 4px solid 'blue';""Background-color: 'yellow';""Border-radius: 15px;" "font-size:20px;"
-                     "color:'black';" "padding:10px 0;" "margin 5px 5px;}" "*:hover{background:'blue';}")
+play_button.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
+                         "color:'#161219';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{background:'#BC006C';}")
+play_button.setFixedWidth(200)
 play_button.clicked.connect(play)  # Connect clicked action to play function
 vertical_layout.addWidget(play_button)
+
 help_button = QPushButton('Help')
-help_button.setStyleSheet("*{Border: 4px solid 'blue';""Background-color: 'yellow';""Border-radius: 5px;" "font-size:20px;"
-                     "color:'black';" "padding:10px 0;" "margin 10px 20px;}" "*:hover{background:'blue';}")
+help_button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+help_button.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
+                         "color:'#161219';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{background:'#BC006C';}")
+help_button.setFixedWidth(200)
 help_button.clicked.connect(help_button_clicked)  # Connect clicked action to play function
 vertical_layout.addWidget(help_button)
 
