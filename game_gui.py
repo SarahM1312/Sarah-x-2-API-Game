@@ -4,15 +4,15 @@ import winsound
 from PyQt5.QtCore import QSize, Qt
 from os.path import exists
 
-from PyQt5.QtGui import QIcon, QCursor
+from PyQt5.QtGui import QIcon, QCursor, QPixmap
 
 import pokemon_top_trumps
 import random
 from pygame import mixer
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView, \
-    QInputDialog, QMessageBox
+    QInputDialog, QMessageBox, QLabel, QGridLayout, QDialog
 
 # Table Cell Items
 user_table_cell_items = []
@@ -27,12 +27,75 @@ basic_stats = ['height', 'weight']
 # The maximum Pokemon ID allowed for the game (Kanto Region)
 max_pokemon_id = 151
 
+# Array of GUI widgets
+widgets = {"logo": [],
+           "button_play_welcome": [],
+           "button_cancel_welcome": [],
+           "answer1": [],
+           "answer2": [],
+           "answer3": [],
+           "answer4": [],
+           "attribute1": [],
+           "attribute2": [],
+           "attribute3": [],
+           "attribute4": [],
+           "question": [],
+           "user_pokemon_name": [],
+           "user_turn": [],
+           "text_browser": [],
+           "question1": [],
+           "button_select_cards": [],
+           "button_cancel": []
+           }
+
 
 # This class is required to disable editing in both tables
 class MyDelegate(QtWidgets.QItemDelegate):
 
     def createEditor(self, *args):
         return None
+
+
+# Create welcome message
+def frame_1():
+    # Add image
+    image = QPixmap("logo.png")
+    logo = QLabel()
+    logo.setPixmap(image)
+    logo.setAlignment(QtCore.Qt.AlignCenter)
+    widgets["logo"].append(logo)
+
+    # Play button widget
+    button_play_welcome = QPushButton("Play")
+    button_play_welcome.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    button_play_welcome.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
+                                      "color:'white';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{"
+                                      "background:'#BC006C';}")
+    widgets["button_play_welcome"].append(button_play_welcome)
+    button_play_welcome.setFixedWidth(200)
+    # button_play_welcome.clicked.connect(QDialog.Accepted)
+
+    # welcome button cancel
+    button_cancel_welcome = QPushButton("Cancel")
+    button_cancel_welcome.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    button_cancel_welcome.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
+                                        "color:'white';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{"
+                                        "background:'#BC006C';}")
+    button_cancel_welcome.setFixedWidth(200)
+    # button_cancel_welcome.clicked.connect(QDialog.Accepted)
+    widgets["button_cancel_welcome"].append(button_cancel_welcome)
+
+    # alignment
+    grid.addWidget(widgets["logo"][-1], 0, 0)
+    grid.addWidget(widgets["button_play_welcome"][-1], 1, 0)
+    grid.addWidget(widgets["button_cancel_welcome"][-1], 2, 0)
+
+    welcome_dialog = QDialog(dialog)
+    welcome_dialog.setLayout(grid)
+
+    # Executes the Welcome Dialog without allowing the code to continue
+    # until the dialog has been terminated
+    welcome_dialog.exec_()
 
 
 # This function is called when the 'Play' button is pressed
@@ -134,8 +197,9 @@ def type_select(stat_choice):
     if stat_choice == 'height' or stat_choice == 'weight':
         if user_pokemon[stat_choice] > computer_pokemon[stat_choice]:
             winner = 'User'
-            populate_text_box(f"<p style='color:blue'>User's {user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]} "
-                              f"beat Computer's {computer_pokemon['name'].upper()} {stat_choice} {computer_pokemon[stat_choice]}</p>")
+            populate_text_box(
+                f"<p style='color:blue'>User's {user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]} "
+                f"beat Computer's {computer_pokemon['name'].upper()} {stat_choice} {computer_pokemon[stat_choice]}</p>")
             # Play victory sound
             winsound.PlaySound("SystemAsterisk", winsound.SND_ALIAS)
         elif user_pokemon[stat_choice] < computer_pokemon[stat_choice]:
@@ -492,6 +556,8 @@ dialog.setWindowTitle("Pokemon Top Trumps")
 dialog.setFixedSize(QSize(620, 800))
 dialog.setWindowIcon(QIcon("pokemon.jpg"))
 dialog.setStyleSheet("Background:'white';""font-size: 20px;""colour:'black';")
+grid = QGridLayout()
+
 horizontal_layout_widget = QtWidgets.QWidget(dialog)
 horizontal_layout_widget.setGeometry(QtCore.QRect(10, 10, 600, 300))
 horizontal_layout_widget.setObjectName("horizontal_layout_widget")
@@ -545,13 +611,13 @@ count_label.setObjectName("count_label")
 count_label.setAlignment(QtCore.Qt.AlignCenter)
 count_label.setWordWrap(True)
 count_label.setStyleSheet(
-        '''
+    '''
         font-family: 'shanti';
         font-size: 25px;
         color: '#BC006C';
 
         '''
-    )
+)
 vertical_layout.addWidget(count_label)
 
 # Define Text Box for displaying instructions
@@ -609,6 +675,9 @@ vertical_layout.addWidget(help_button)
 
 # Initialise music player
 mixer.init()
+
+# Show welcome screen
+frame_1()
 
 # Prompt the User to choose the pack size - only do this once
 choose_size()
