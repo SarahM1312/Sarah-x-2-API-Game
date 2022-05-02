@@ -4,7 +4,7 @@ import winsound
 from PyQt5.QtCore import QSize, Qt
 from os.path import exists
 
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QCursor
 
 import pokemon_top_trumps
 import random
@@ -487,7 +487,6 @@ def initialise_pokemon_data():
 # Create Game GUI
 app = QApplication(sys.argv)
 print(QtWidgets.QStyleFactory.keys())
-app.setStyle('Windows')
 dialog = QWidget()
 dialog.setWindowTitle("Pokemon Top Trumps")
 dialog.setFixedSize(QSize(620, 800))
@@ -543,6 +542,16 @@ vertical_layout.setObjectName("vertical_layout")
 # Define label for displaying card count
 count_label = QtWidgets.QLabel(vertical_layout_widget)
 count_label.setObjectName("count_label")
+count_label.setAlignment(QtCore.Qt.AlignCenter)
+count_label.setWordWrap(True)
+count_label.setStyleSheet(
+        '''
+        font-family: 'shanti';
+        font-size: 25px;
+        color: '#BC006C';
+
+        '''
+    )
 vertical_layout.addWidget(count_label)
 
 # Define Text Box for displaying instructions
@@ -552,15 +561,49 @@ vertical_layout.addWidget(text_browser)
 
 # Define buttons
 play_button = QPushButton('Play')
+play_button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
 play_button.setStyleSheet(
-    "Border: 4px solid '#BC006C';""Background-color: 'pink';""Border-radius: 15px;" "font-size:35px;""color:'black';")
+    # setting variable margins
+    "*{margin-left: " + str(0) + "px;" +
+    "margin-right: " + str(0) + "px;" +
+    '''
+    border: 4px solid '#BC006C';
+    color: black;
+    font-family: 'shanti';
+    font-size: 16px;
+    border-radius: 25px;
+    padding: 15px 0;
+    margin-top: 20px;
+    }
+    *:hover{
+        background: '#BC006C';
+    }
+    '''
+)
 play_button.clicked.connect(play)  # Connect clicked action to play function
 vertical_layout.addWidget(play_button)
 play_button.hide()
 
 help_button = QPushButton('Help')
+help_button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
 help_button.setStyleSheet(
-    "Border: 4px solid '#BC006C';""Background-color: 'pink';""Border-radius: 15px;" "font-size:35px;""color:'black';")
+    # setting variable margins
+    "*{margin-left: " + str(0) + "px;" +
+    "margin-right: " + str(0) + "px;" +
+    '''
+    border: 4px solid '#BC006C';
+    color: black;
+    font-family: 'shanti';
+    font-size: 16px;
+    border-radius: 25px;
+    padding: 15px 0;
+    margin-top: 20px;
+    }
+    *:hover{
+        background: '#BC006C';
+    }
+    '''
+)
 help_button.clicked.connect(help_button_clicked)  # Connect clicked action to play function
 vertical_layout.addWidget(help_button)
 
