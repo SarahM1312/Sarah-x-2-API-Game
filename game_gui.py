@@ -4,7 +4,7 @@ import winsound
 from PyQt5.QtCore import QSize, Qt
 from os.path import exists
 
-from PyQt5.QtGui import QIcon, QCursor, QPixmap
+from PyQt5.QtGui import QIcon, QCursor, QPixmap, QPalette, QColor, QFont
 
 import pokemon_top_trumps
 import random
@@ -58,6 +58,11 @@ class MyDelegate(QtWidgets.QItemDelegate):
 
 # Create welcome message
 def frame_1():
+    welcome_dialog = QDialog(dialog, Qt.WindowCloseButtonHint)
+    welcome_dialog.setWindowTitle("Welcome!")
+    welcome_dialog.setStyleSheet("background: '#161219';")
+    welcome_dialog.setLayout(grid)
+
     # Add image
     image = QPixmap("logo.png")
     logo = QLabel()
@@ -73,7 +78,7 @@ def frame_1():
                                       "background:'#BC006C';}")
     widgets["button_play_welcome"].append(button_play_welcome)
     button_play_welcome.setFixedWidth(200)
-    # button_play_welcome.clicked.connect(QDialog.Accepted)
+    button_play_welcome.clicked.connect(welcome_dialog.close)
 
     # welcome button cancel
     button_cancel_welcome = QPushButton("Cancel")
@@ -82,16 +87,13 @@ def frame_1():
                                         "color:'white';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{"
                                         "background:'#BC006C';}")
     button_cancel_welcome.setFixedWidth(200)
-    # button_cancel_welcome.clicked.connect(QDialog.Accepted)
+    button_cancel_welcome.clicked.connect(welcome_dialog.close)
     widgets["button_cancel_welcome"].append(button_cancel_welcome)
 
     # alignment
     grid.addWidget(widgets["logo"][-1], 0, 0)
     grid.addWidget(widgets["button_play_welcome"][-1], 1, 0)
     grid.addWidget(widgets["button_cancel_welcome"][-1], 2, 0)
-
-    welcome_dialog = QDialog(dialog)
-    welcome_dialog.setLayout(grid)
 
     # Executes the Welcome Dialog without allowing the code to continue
     # until the dialog has been terminated
@@ -133,7 +135,9 @@ def help_button_clicked():
                 "\n7. The winner of the highest stat wins both top cards and adds to the base of their pile" \
                 "\n6. The winner of the round chooses the stat for the next round" \
                 "\n7. The first player to get all of the cards wins!"
-    QMessageBox.information(dialog, "How to Play Pokemon Top Trumps",
+    help_dialog = QMessageBox()
+    help_dialog.setPalette(palette)
+    help_dialog.information(dialog, "How to Play Pokemon Top Trumps",
                             help_text,
                             QMessageBox.Ok)
 
@@ -397,6 +401,28 @@ def choose_size():
     # User chooses size of pack to play with
     error = True
     while error:
+        # question1 = QLabel(f"How many Pokemon cards do you want to play with?\n\nChoose an even number "
+        #                    f"between 2 and #150?")
+        # question1.setStyleSheet("font-size:20px;" "color:'white';")
+        #
+        # # select cards button widget
+        # button_select_cards = QPushButton("Play")
+        # button_select_cards.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        # button_select_cards.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
+        #                                   "color:'white';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{background:'#BC006C';}")
+        # widgets["button_select_cards"].append(button_select_cards)
+        # button_select_cards.setFixedWidth(200)
+        # button_select_cards.clicked.connect(select_card_number)
+        #
+        # # button cancel
+        # button_cancel = QPushButton("Cancel")
+        # button_cancel.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        # button_cancel.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
+        #                             "color:'white';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{background:'#BC006C';}")
+        # button_cancel.setFixedWidth(200)
+        # widgets["button_cancel"].append(button_cancel)
+        # widgets["button_select_cards"].append(button_select_cards)
+
         input_size_of_pack, ok = \
             QInputDialog.getInt(dialog,  # parent
                                 "Pokemon Top Trumps",  # title
@@ -672,6 +698,25 @@ help_button.setStyleSheet(
 )
 help_button.clicked.connect(help_button_clicked)  # Connect clicked action to play function
 vertical_layout.addWidget(help_button)
+
+palette = QPalette()
+palette.setColor(QPalette.Window, Qt.black)  # General background colour
+palette.setColor(QPalette.WindowText, QColor(188, 0, 108))
+# palette.setColor(QPalette.Base, Qt.green)  # Text entry base e.g. in table
+# palette.setColor(QPalette.AlternateBase, Qt.black)
+# palette.setColor(QPalette.ToolTipBase, Qt.white)
+# palette.setColor(QPalette.ToolTipText, Qt.white)
+# palette.setColor(QPalette.Text, Qt.blue)  # includes table text contents
+# palette.setColor(QPalette.Button, Qt.red)
+palette.setColor(QPalette.ButtonText, QColor(188, 0, 108))  # Includes table header / footer text
+# palette.setColor(QPalette.BrightText, Qt.red)
+# palette.setColor(QPalette.Highlight, QColor(100,100,225))
+# palette.setColor(QPalette.HighlightedText, Qt.black)
+
+app.setPalette(palette)
+dialog.setPalette(palette)
+app.setFont(QFont('shanti'))
+app.setStyleSheet("background: 'black'")
 
 # Initialise music player
 mixer.init()
