@@ -1,17 +1,24 @@
 import sys
+import winsound
 
 
 from PyQt5.QtCore import QSize, Qt
 from os.path import exists
 
+from PyQt5.QtGui import QIcon, QCursor, QPixmap, QPalette, QColor, QFont
+
 import pokemon_top_trumps
 import random
 from pygame import mixer
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView, \
+<<<<<<< HEAD
     QInputDialog, QMessageBox
 from PyQt5.QtGui import QCursor
+=======
+    QInputDialog, QMessageBox, QLabel, QGridLayout, QDialog
+>>>>>>> 6e33078ee1c3451fbcab8c9b8bf770e96b0a5af2
 
 # Table Cell Items
 user_table_cell_items = []
@@ -26,6 +33,27 @@ basic_stats = ['height', 'weight']
 # The maximum Pokemon ID allowed for the game (Kanto Region)
 max_pokemon_id = 151
 
+# Array of GUI widgets
+widgets = {"logo": [],
+           "button_play_welcome": [],
+           "button_cancel_welcome": [],
+           "answer1": [],
+           "answer2": [],
+           "answer3": [],
+           "answer4": [],
+           "attribute1": [],
+           "attribute2": [],
+           "attribute3": [],
+           "attribute4": [],
+           "question": [],
+           "user_pokemon_name": [],
+           "user_turn": [],
+           "text_browser": [],
+           "question1": [],
+           "button_select_cards": [],
+           "button_cancel": []
+           }
+
 
 # This class is required to disable editing in both tables
 class MyDelegate(QtWidgets.QItemDelegate):
@@ -34,12 +62,56 @@ class MyDelegate(QtWidgets.QItemDelegate):
         return None
 
 
+# Create welcome message
+def frame_1():
+    welcome_dialog = QDialog(dialog, Qt.WindowCloseButtonHint)
+    welcome_dialog.setWindowTitle("Welcome!")
+    welcome_dialog.setStyleSheet("background: '#161219';")
+    welcome_dialog.setLayout(grid)
+
+    # Add image
+    image = QPixmap("logo.png")
+    logo = QLabel()
+    logo.setPixmap(image)
+    logo.setAlignment(QtCore.Qt.AlignCenter)
+    widgets["logo"].append(logo)
+
+    # Play button widget
+    button_play_welcome = QPushButton("Play")
+    button_play_welcome.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    button_play_welcome.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
+                                      "color:'white';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{"
+                                      "background:'#BC006C';}")
+    widgets["button_play_welcome"].append(button_play_welcome)
+    button_play_welcome.setFixedWidth(200)
+    button_play_welcome.clicked.connect(welcome_dialog.close)
+
+    # welcome button cancel
+    button_cancel_welcome = QPushButton("Cancel")
+    button_cancel_welcome.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    button_cancel_welcome.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
+                                        "color:'white';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{"
+                                        "background:'#BC006C';}")
+    button_cancel_welcome.setFixedWidth(200)
+    button_cancel_welcome.clicked.connect(welcome_dialog.close)
+    widgets["button_cancel_welcome"].append(button_cancel_welcome)
+
+    # alignment
+    grid.addWidget(widgets["logo"][-1], 0, 0)
+    grid.addWidget(widgets["button_play_welcome"][-1], 1, 0)
+    grid.addWidget(widgets["button_cancel_welcome"][-1], 2, 0)
+
+    # Executes the Welcome Dialog without allowing the code to continue
+    # until the dialog has been terminated
+    welcome_dialog.exec_()
+
+
 # This function is called when the 'Play' button is pressed
 def play():
     # Reinitialise the Data (but only if not midway through a game)
     if len(computer_pokemon_list) == 0 or len(user_pokemon_list) == 0:
-        # First disable the play button, it should not be activated while initialising data
-        play_button.setEnabled(True)
+        # First hide the play button, it should not be activated while initialising data
+        play_button.show()
 
         # Allow user to reset deck size before new game
         choose_size()
@@ -69,7 +141,9 @@ def help_button_clicked():
                 "\n7. The winner of the highest stat wins both top cards and adds to the base of their pile" \
                 "\n6. The winner of the round chooses the stat for the next round" \
                 "\n7. The first player to get all of the cards wins!"
-    QMessageBox.information(dialog, "How to Play Pokemon Top Trumps",
+    help_dialog = QMessageBox()
+    help_dialog.setPalette(palette)
+    help_dialog.information(dialog, "How to Play Pokemon Top Trumps",
                             help_text,
                             QMessageBox.Ok)
 
@@ -89,6 +163,10 @@ def reset_gui():
     # Re-enable both tables
     user_table.setEnabled(True)
     computer_table.setEnabled(True)
+
+    # Set the text for the Play button and hide it
+    play_button.setText('Next Round')
+    play_button.hide()
 
 
 # This function is called when a selection is made to the User table
@@ -110,6 +188,7 @@ def user_table_type_select():
     except:
         print("Exception has occurred in user_table_type_select")
 
+
 # Function to perform comparison of current User and Computer Pokemon
 # based on the selected Pokemon statistical type
 def type_select(stat_choice):
@@ -127,13 +206,18 @@ def type_select(stat_choice):
     if stat_choice == 'height' or stat_choice == 'weight':
         if user_pokemon[stat_choice] > computer_pokemon[stat_choice]:
             winner = 'User'
-            populate_text_box(f"User's {user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]} "
-                              f"beat Computer's {computer_pokemon['name'].upper()} {stat_choice} {computer_pokemon[stat_choice]}")
+            populate_text_box(
+                f"<p style='color:blue'>User's {user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]} "
+                f"beat Computer's {computer_pokemon['name'].upper()} {stat_choice} {computer_pokemon[stat_choice]}</p>")
+            # Play victory sound
+            winsound.PlaySound("SystemAsterisk", winsound.SND_ALIAS)
         elif user_pokemon[stat_choice] < computer_pokemon[stat_choice]:
             winner = 'Computer'
             populate_text_box(
-                f"Computer's {computer_pokemon['name'].upper()} {stat_choice} {computer_pokemon[stat_choice]} "
-                f"beat User's {user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]}")
+                f"<p style='color:red'>Computer's {computer_pokemon['name'].upper()} {stat_choice} {computer_pokemon[stat_choice]} "
+                f"beat User's {user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]}</p>")
+            # Play sad beep
+            winsound.Beep(300, 500)
         else:
             winner = 'Draw'
             populate_text_box(f"{user_pokemon['name'].upper()} {stat_choice} {user_pokemon[stat_choice]} "
@@ -143,7 +227,7 @@ def type_select(stat_choice):
 
     # If User wins
     if winner == 'User':
-        populate_text_box(f"~~~~~~~~~ User wins this round! ~~~~~~~~~")
+        populate_text_box(f"<i><p style='color:blue'>~~~~~~~~~ User wins this round! ~~~~~~~~~</p></i>")
         computer_pokemon_list.remove(computer_pokemon)
 
         # User wins the Computer's Pokemon
@@ -158,7 +242,7 @@ def type_select(stat_choice):
 
     # If Computer wins
     elif winner == 'Computer':
-        populate_text_box(f"~~~~~~~ Computer wins this round! ~~~~~~~")
+        populate_text_box(f"<i><p style='color:red'>~~~~~~~ Computer wins this round! ~~~~~~~</p></i>")
         user_pokemon_list.remove(user_pokemon)
 
         # Computer wins the User's Pokemon
@@ -173,7 +257,7 @@ def type_select(stat_choice):
 
     # If it's a draw
     else:
-        populate_text_box(f"~~~~~~~~ This round was a Draw! ~~~~~~~~~")
+        populate_text_box(f"<i>~~~~~~~~ This round was a Draw! ~~~~~~~~~</i>")
 
         # Add both cards of this round to the draw_list to be won in a subsequent round
         user_pokemon_list.remove(user_pokemon)
@@ -253,10 +337,11 @@ def play_victory_sound(winning_type):
         mixer.music.load(file_path)
         mixer.music.play()
     else:
+        winsound.PlaySound("SystemQuestion", winsound.SND_ALIAS)
         print(f"Could not play victory tune: the file {file_path} does not exist")
 
-    # Files exist for fire, water, poison, ghost, ice, electric, fighting, flying, rock
-    # No files for normal, grass, ground, psychic, bug, dark, dragon, steel, fairy
+    # Files exist for fire, water, poison, ghost, ice, electric, fighting, flying, rock, dark
+    # No files for normal, grass, ground, psychic, bug, dragon, steel, fairy
 
 
 # Function to report is the game is over
@@ -265,17 +350,19 @@ def report_game_over():
     # Report who won!
     if len(computer_pokemon_list) == 0:
         if len(user_pokemon_list) == 0:
-            populate_text_box("****** No-one has any more cards - STALEMATE! ******")
+            populate_text_box("<b>**** No-one has any more cards - STALEMATE! ****</b>")
             play_button.setText('New Game')
         else:
-            populate_text_box("******* Computer has no more cards - YOU WIN *******")
+            populate_text_box("<b><p style='color:blue'>***** Computer has no more cards - YOU WIN *****</p></b>")
             play_button.setText('New Game')
+            play_victory_sound('winner')
     elif len(user_pokemon_list) == 0:
-        populate_text_box("****** User has no more cards - COMPUTER WINS ******")
+        populate_text_box("<b><p style='color:red'>**** User has no more cards - COMPUTER WINS ****</p></b>")
         play_button.setText('New Game')
+        play_victory_sound('winner')
 
     # Re-enable the 'Play button'
-    play_button.setEnabled(True)
+    play_button.show()
 
 
 # Function to populate the information text box
@@ -319,6 +406,28 @@ def choose_size():
     # User chooses size of pack to play with
     error = True
     while error:
+        # question1 = QLabel(f"How many Pokemon cards do you want to play with?\n\nChoose an even number "
+        #                    f"between 2 and #150?")
+        # question1.setStyleSheet("font-size:20px;" "color:'white';")
+        #
+        # # select cards button widget
+        # button_select_cards = QPushButton("Play")
+        # button_select_cards.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        # button_select_cards.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
+        #                                   "color:'white';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{background:'#BC006C';}")
+        # widgets["button_select_cards"].append(button_select_cards)
+        # button_select_cards.setFixedWidth(200)
+        # button_select_cards.clicked.connect(select_card_number)
+        #
+        # # button cancel
+        # button_cancel = QPushButton("Cancel")
+        # button_cancel.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        # button_cancel.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
+        #                             "color:'white';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{background:'#BC006C';}")
+        # button_cancel.setFixedWidth(200)
+        # widgets["button_cancel"].append(button_cancel)
+        # widgets["button_select_cards"].append(button_select_cards)
+
         input_size_of_pack, ok = \
             QInputDialog.getInt(dialog,  # parent
                                 "Pokemon Top Trumps",  # title
@@ -371,7 +480,7 @@ def round_over():
 
     # Prompt user to press button for new round
     play_button.setText('Next Round')
-    play_button.setEnabled(True)
+    play_button.show()
 
 
 # This function generates the table items
@@ -402,7 +511,7 @@ def generate_table_items(table, owner):
 # Function to perform a round of the game
 def game_round():
     # Disable the 'Play button' until the round is over
-    play_button.setEnabled(False)
+    play_button.hide()
 
     # Carry on playing until one of the lists is empty,
     # i.e. either the User or the Computer has won all the Pokemon
@@ -412,9 +521,15 @@ def game_round():
 
         # Display whose turn it is
         if player_turn == 'User':
+<<<<<<< HEAD
             populate_text_box(f"^^^^^\nYOUR TURN!\n^^^^^^^\n")
         else:
             populate_text_box(f"^^^\nCOMPUTER'S TURN!\n^^^\n")
+=======
+            populate_text_box(f"<p style='color:blue'>^^ YOUR TURN! ^^</p>")
+        else:
+            populate_text_box(f"<p style='color:red'>^^ COMPUTER'S TURN! ^^</p>")
+>>>>>>> 6e33078ee1c3451fbcab8c9b8bf770e96b0a5af2
 
         # Display User Pokemon statistics
         display_pokemon_stats(user_pokemon, 'User')
@@ -422,16 +537,16 @@ def game_round():
         # Determine which statistic to compare
         if player_turn == 'User':
             # If it's the User's turn, prompt User for choice
-            populate_text_box(f"Select the Pokemon statistic would you like to play!")
+            populate_text_box(f"<p style='color:blue'>Select the Pokemon statistic would you like to play!</p>")
         else:
             # Display Computer Pokemon statistics
             allowed_stats = display_pokemon_stats(computer_pokemon, 'Computer')
 
             # If it's the Computer's turn, select choice randomly
-            stat_choice = allowed_stats[random.randint(0, (len(allowed_stats))-1)]
+            stat_choice = allowed_stats[random.randint(0, (len(allowed_stats)) - 1)]
 
             # Report to the User what the Computer's choice was
-            populate_text_box(f"The Computer has chosen to compare {stat_choice}")
+            populate_text_box(f"<p style='color:red'>The Computer has chosen to compare {stat_choice}</p>")
 
             # Directly initiate statistic comparison for Computer
             type_select(stat_choice)
@@ -447,6 +562,9 @@ def game_round():
 # Function to generate a random list of Pokemon for the User and Computer of size pack_size
 # and to generate an empty draw_list
 def initialise_pokemon_data():
+    # Report that the data is being loaded
+    populate_text_box("Loading Pokemon data...")
+
     # Randomly generate a list of Pokemon IDs for the User and the Computer
     hand_size = int(pack_size / 2)
     user_pokemon_ids = pokemon_top_trumps.generate_pokemon_ids(hand_size, max_pokemon_id)
@@ -465,14 +583,26 @@ def initialise_pokemon_data():
     draw_list = []
 
     # Report to the User that a new game has been initialised
+<<<<<<< HEAD
     populate_text_box("\n==================\n NEW GAME \n===================\n")
+=======
+    populate_text_box("\n<b>============ NEW GAME =============</b>")
+>>>>>>> 6e33078ee1c3451fbcab8c9b8bf770e96b0a5af2
 
 
 # Create Game GUI
 app = QApplication(sys.argv)
+print(QtWidgets.QStyleFactory.keys())
 dialog = QWidget()
 dialog.setWindowTitle("Pokemon Top Trumps")
 dialog.setFixedSize(QSize(620, 800))
+<<<<<<< HEAD
+=======
+dialog.setWindowIcon(QIcon("pokemon.jpg"))
+dialog.setStyleSheet("Background:'white';""font-size: 20px;""colour:'black';")
+grid = QGridLayout()
+
+>>>>>>> 6e33078ee1c3451fbcab8c9b8bf770e96b0a5af2
 horizontal_layout_widget = QtWidgets.QWidget(dialog)
 horizontal_layout_widget.setGeometry(QtCore.QRect(10, 10, 600, 300))
 horizontal_layout_widget.setObjectName("horizontal_layout_widget")
@@ -482,7 +612,7 @@ horizontal_layout.setObjectName("horizontal_layout")
 
 # Define User Pokemon Table
 user_table = QTableWidget(5, 1)
-user_table.setStyleSheet("QtableWidget:: item {border:0px; padding:5px;}""Background-color:'pink'")
+user_table.setStyleSheet("QtableWidget:: item {border:5px; padding:5px;}""Background-color:'pink'")
 user_table.setItemDelegateForColumn(0, MyDelegate())  # set column 1 to be non-editable
 user_table.clicked.connect(user_table_type_select)  # connect Pokemon Type selection to function
 user_table.setHorizontalHeaderLabels(['User'])
@@ -523,6 +653,16 @@ vertical_layout.setObjectName("vertical_layout")
 # Define label for displaying card count
 count_label = QtWidgets.QLabel(vertical_layout_widget)
 count_label.setObjectName("count_label")
+count_label.setAlignment(QtCore.Qt.AlignCenter)
+count_label.setWordWrap(True)
+count_label.setStyleSheet(
+    '''
+        font-family: 'shanti';
+        font-size: 25px;
+        color: '#BC006C';
+
+        '''
+)
 vertical_layout.addWidget(count_label)
 
 # Define Text Box for displaying instructions
@@ -535,6 +675,7 @@ vertical_layout.addWidget(text_browser)
 # Define buttons
 play_button = QPushButton('Play')
 play_button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+<<<<<<< HEAD
 play_button.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
                          "color:'#161219';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{background:'#BC006C';}")
 play_button.setFixedWidth(200)
@@ -546,11 +687,77 @@ help_button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
 help_button.setStyleSheet("*{Border: 4px solid '#BC006C';" "Border-radius: 5px;" "font-size:20px;"
                          "color:'#161219';" "padding:5px 0;" "margin 5px 10px;}" "*:hover{background:'#BC006C';}")
 help_button.setFixedWidth(200)
+=======
+play_button.setStyleSheet(
+    # setting variable margins
+    "*{margin-left: " + str(0) + "px;" +
+    "margin-right: " + str(0) + "px;" +
+    '''
+    border: 4px solid '#BC006C';
+    color: black;
+    font-family: 'shanti';
+    font-size: 16px;
+    border-radius: 25px;
+    padding: 15px 0;
+    margin-top: 20px;
+    }
+    *:hover{
+        background: '#BC006C';
+    }
+    '''
+)
+play_button.clicked.connect(play)  # Connect clicked action to play function
+vertical_layout.addWidget(play_button)
+play_button.hide()
+
+help_button = QPushButton('Help')
+help_button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+help_button.setStyleSheet(
+    # setting variable margins
+    "*{margin-left: " + str(0) + "px;" +
+    "margin-right: " + str(0) + "px;" +
+    '''
+    border: 4px solid '#BC006C';
+    color: black;
+    font-family: 'shanti';
+    font-size: 16px;
+    border-radius: 25px;
+    padding: 15px 0;
+    margin-top: 20px;
+    }
+    *:hover{
+        background: '#BC006C';
+    }
+    '''
+)
+>>>>>>> 6e33078ee1c3451fbcab8c9b8bf770e96b0a5af2
 help_button.clicked.connect(help_button_clicked)  # Connect clicked action to play function
 vertical_layout.addWidget(help_button)
 
+palette = QPalette()
+palette.setColor(QPalette.Window, Qt.black)  # General background colour
+palette.setColor(QPalette.WindowText, QColor(188, 0, 108))
+# palette.setColor(QPalette.Base, Qt.green)  # Text entry base e.g. in table
+# palette.setColor(QPalette.AlternateBase, Qt.black)
+# palette.setColor(QPalette.ToolTipBase, Qt.white)
+# palette.setColor(QPalette.ToolTipText, Qt.white)
+# palette.setColor(QPalette.Text, Qt.blue)  # includes table text contents
+# palette.setColor(QPalette.Button, Qt.red)
+palette.setColor(QPalette.ButtonText, QColor(188, 0, 108))  # Includes table header / footer text
+# palette.setColor(QPalette.BrightText, Qt.red)
+# palette.setColor(QPalette.Highlight, QColor(100,100,225))
+# palette.setColor(QPalette.HighlightedText, Qt.black)
+
+app.setPalette(palette)
+dialog.setPalette(palette)
+app.setFont(QFont('shanti'))
+app.setStyleSheet("background: 'black'")
+
 # Initialise music player
 mixer.init()
+
+# Show welcome screen
+frame_1()
 
 # Prompt the User to choose the pack size - only do this once
 choose_size()
